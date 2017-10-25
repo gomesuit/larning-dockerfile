@@ -1,0 +1,43 @@
+FROM ruby:2.4.1
+
+# timezone
+RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+
+EXPOSE 3000
+WORKDIR /home/port/app
+
+# install dependency package
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends apt-transport-https libssl-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# install nodejs
+RUN curl -s -L git.io/nodebrew | perl - setup
+ENV PATH /root/.nodebrew/current/bin:$PATH
+RUN nodebrew install-binary v8.7.0
+RUN nodebrew use v8.7.0
+
+# install yarn
+# https://yarnpkg.com/en/docs/install#linux-tab
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends apt-transport-https yarn && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN gem install bundler
+
+COPY . /home/port/app
+
+# bundle install
+RUN bundle install --without development test --path vendor/bundle
+
+# yarn install
+RUN yarn install
+
+# assets precompile
+RUN RAILS_ENV=production bundle exec rails assets:precompile
+
+CMD bundle exec puma -t 5:5 -p 3000 -e "$RAILS_ENV" -C config/puma.rb

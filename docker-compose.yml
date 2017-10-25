@@ -1,0 +1,47 @@
+version: '2'
+services:
+  rails-base:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.base
+    ports: &ports
+      - "127.0.0.1:3000:3000"
+    environment: &environment
+      - RAILS_ENV=production
+      - SECRET_KEY_BASE=e453291d84bfed269bb919dcd1024d03702ad8062bdff22ff71d488397f72c432823be7d0c67db06e2b7ae08039ac7b549ce393bd944b61fced5f1b1762a215c
+  rails1:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.1
+    ports: *ports
+    environment: *environment
+  rails2:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.2
+    ports: *ports
+    environment: *environment
+  rails3:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.3
+    ports: *ports
+    environment: *environment
+  rails4:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.4
+    ports: *ports
+    environment: *environment
+  rails5:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.5
+    ports: *ports
+    environment: *environment
+  rails6:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.6
+    ports: *ports
+    environment: *environment
